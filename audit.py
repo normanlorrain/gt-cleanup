@@ -74,6 +74,9 @@ def walk():
                 log.warn(f"{f}  Unknown file type")
                 continue
 
+            if "(1)" in f:
+                log.info(f"removing {f} (Google generated, lower res version)")
+
             try:
                 y, m, d = getDateFromFile(root, f)
             except ValueError as e:

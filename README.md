@@ -1,6 +1,12 @@
 # gt-cleanup
 Restructure the photos from Google Takeout into a folder structure, removing duplicates and extra files.
+Files are structured as follows
 
+      {destination directory}/{year}/{year}_{month}/{year}_{month}_{day}
+
+
+
+After that, you can process the files further, looking for duplicates with your library, etc.
 
 
 
@@ -63,3 +69,4 @@ this file had an exif timestamp: 2015:07:28 20:39:27, matching photoTakenTime
 
 
 
+Files with "(1)" seem to be resized to fit on the screen of the phone (confirm?).  These are deleted.
