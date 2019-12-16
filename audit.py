@@ -1,18 +1,19 @@
 import os
 import sys
 import shutil
-import pyexiv2
 import re
+import pyexiv2
 
-import fix_print_encoding
 import log
 
-log.init("takeout-fix.log")
+log.init("gt-cleanup.log")
 
 
 src = r"D:\GooglePhotoTakeout - 2012-12\Takeout"
 dst = r"D:\GooglePhotosSorted"
 dupes = r"D:\GooglePhotosDupes"
+os.makedirs(dst, exist_ok=True)
+os.makedirs(dupes, exist_ok=True)
 
 
 def getDatefromExif(f):
@@ -66,8 +67,8 @@ def walk():
         for f in files:
             if f.endswith(".json"):
                 log.info(f"removing {f}")
-
                 os.remove(os.path.join(root, f))
+                continue
 
             if not f.lower().endswith((".png", ".jpg", ".jpeg", "gif", "mp4")):
                 log.warn(f"{f}  Unknown file type")
