@@ -12,6 +12,7 @@ log.init("gt-cleanup.log")
 src = r"D:\GooglePhotoTakeout - 2012-12\Takeout"
 dst = r"D:\GooglePhotosSorted"
 dupes = r"D:\GooglePhotosDupes"
+
 os.makedirs(dst, exist_ok=True)
 os.makedirs(dupes, exist_ok=True)
 
@@ -84,7 +85,7 @@ def walk():
                 continue
 
             # Make dst directory if necessary
-            newDir = os.path.join(dst, y, f"{y}_{m}", f"{y}_{m}_{d}")
+            newDir = os.path.join(dst, y, f"{y}-{m}", f"{y}-{m}-{d}")
             if not os.path.exists(newDir):
                 log.info(f"Creating directory {newDir}")
                 os.makedirs(newDir, exist_ok=True)
