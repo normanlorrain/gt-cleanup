@@ -21,7 +21,7 @@ getLogger("").setLevel(DEBUG)
 
 
 def init(filename):
-    filehandler = FileHandler(filename, mode="a")
+    filehandler = FileHandler(filename, mode="a", encoding="utf-8")
     filehandler.setLevel(INFO)
     filehandler.setFormatter(Formatter(LONGFORMAT))
     getLogger("").addHandler(filehandler)
