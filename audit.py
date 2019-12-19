@@ -9,12 +9,36 @@ import log
 log.init("gt-cleanup.log")
 
 
+# Change accordingly: (TODO: command-line arguments...)
+safe = True
+
 src = r"D:\GooglePhotoTakeout - 2012-12\Takeout"
 dst = r"D:\GooglePhotosSorted"
 dupes = r"D:\GooglePhotosDupes"
 
-os.makedirs(dst, exist_ok=True)
-os.makedirs(dupes, exist_ok=True)
+src = r"H:\Photos\2016\other"
+dst = r"H:\Photos"
+
+
+def rm(filename):
+    if safe:
+        log.info(f"Removing {filename}")
+        os.remove(filename)
+    else:
+        log.info(f"Would remove {filename}")
+
+
+def mkdir(pathname):
+    if safe:
+        os.makedirs(pathname, exist_ok=True)
+
+
+def mv(src, dst):
+    if safe:
+        log.info(f"Moving {src} to {dst}")
+        shutil.move(src, dst)
+    else:
+        log.info(f"Would move {src} to {dst}")
 
 
 def getDatefromExif(f):
@@ -59,20 +83,21 @@ def getDateFromFile(root, f):
     try:
         return getDatefromExif(filename)  # Format is: "2014:02:08 09:52:31"
     except ValueError as e:
-        log.info(f"{f}, {e}, Resorting to filename.")
+        log.info(f"{root},{f}, {e}, Resorting to filename.")
     return getDateFromString(f)
 
 
 def walk():
     for root, _, files in os.walk(src):
+        log.info(f"In {root}")
         for f in files:
             if f.endswith(".json"):
                 log.info(f"removing {f}")
-                os.remove(os.path.join(root, f))
+                rm(os.path.join(root, f))
                 continue
 
             if not f.lower().endswith((".png", ".jpg", ".jpeg", "gif", "mp4")):
-                log.warn(f"{f}  Unknown file type")
+                log.warning(f"{f}  Unknown file type")
                 continue
 
             if "(1)" in f:
@@ -81,14 +106,14 @@ def walk():
             try:
                 y, m, d = getDateFromFile(root, f)
             except ValueError as e:
-                log.warn(f"{f}, {e}, (File not processed)")
+                log.warning(f"{f}, {e}, (File not processed)")
                 continue
 
             # Make dst directory if necessary
             newDir = os.path.join(dst, y, f"{y}-{m}", f"{y}-{m}-{d}")
             if not os.path.exists(newDir):
                 log.info(f"Creating directory {newDir}")
-                os.makedirs(newDir, exist_ok=True)
+                mkdir(newDir)
 
             srcFileName = os.path.join(root, f)
             dstFileName = os.path.join(newDir, f)
@@ -98,11 +123,11 @@ def walk():
                 if os.path.getsize(srcFileName) < os.path.getsize(dstFileName):
                     log.info(f"{f}, File already exists (Keeping larger one): ")
                     dupeFileName = os.path.join(dupes, f)
-                    shutil.move(srcFileName, dupeFileName)
+                    mv(srcFileName, dupeFileName)
                 else:
-                    shutil.move(srcFileName, dstFileName)
+                    mv(srcFileName, dstFileName)
             else:
-                shutil.move(srcFileName, dstFileName)
+                mv(srcFileName, dstFileName)
 
 
 def testGetDateFromString():
@@ -117,6 +142,8 @@ def testGetDateFromString():
 
 
 if __name__ == "__main__":
+    mkdir(dst)
+    mkdir(dupes)
     walk()
     # testGetDateFromString()
 
