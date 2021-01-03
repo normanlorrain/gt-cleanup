@@ -8,7 +8,7 @@ from logging import (
     getLogger,
     debug,
     info,
-    warn,
+    warning,
     error,
 )
 
