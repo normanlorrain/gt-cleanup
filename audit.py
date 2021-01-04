@@ -3,6 +3,7 @@ import sys
 import shutil
 import re
 import pyexiv2
+import filetype
 
 import log
 
@@ -12,12 +13,9 @@ log.init("gt-cleanup.log")
 # Change accordingly: (TODO: command-line arguments...)
 safe = True
 
-src = r"D:\GooglePhotoTakeout - 2012-12\Takeout"
-dst = r"D:\GooglePhotosSorted"
-dupes = r"D:\GooglePhotosDupes"
-
-src = r"H:\Photos\2016\other"
-dst = r"H:\Photos"
+src = r"D:\Takeout\Google Photos"
+dst = r"D:\Takeout\Sorted"
+dupes = r"D:\Takeout\Dupes"
 
 
 def rm(filename):
@@ -45,8 +43,8 @@ def getDatefromExif(f):
     datetime = ""
     datetime_original = ""
 
-    image = pyexiv2.Image(f)
     try:
+        image = pyexiv2.Image(f)
         exif = image.read_exif()
     except RuntimeError:
         raise ValueError("Exif library can't read this")
@@ -69,7 +67,7 @@ def getDatefromExif(f):
 
 def getDateFromString(s):
     regex = re.compile(
-        r".*(2007|2008|2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019)[^0-9]?(\d\d)[^0-9]?(\d\d)"
+        r".*\D(2007|2008|2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019|2020|2021)[^0-9]?(\d\d)[^0-9]?(\d\d)"
     )
     result = regex.match(s)
     if result:
@@ -80,11 +78,19 @@ def getDateFromString(s):
 
 def getDateFromFile(root, f):
     filename = os.path.join(root, f)
+
     try:
         return getDatefromExif(filename)  # Format is: "2014:02:08 09:52:31"
     except ValueError as e:
-        log.info(f"{root},{f}, {e}, Resorting to filename.")
+        log.info(f"{root}\{f}:  {e}, Resorting to filename.")
     return getDateFromString(f)
+
+
+def fixExtension(root, f):
+    absFile = os.path.join(root, f)
+    expectedExtension = filetype.guess_extension(absFile)
+    if f.endswith != expectedExtension:
+        os.rename(absFile, absFile + "." + expectedExtension)
 
 
 def walk():
@@ -101,7 +107,12 @@ def walk():
                 continue
 
             if "(1)" in f:
-                log.info(f"removing {f} (Google generated, lower res version)")
+                log.info(
+                    f"skipping {f} (Google generated, lower res version, or Quicktime mov file)"
+                )
+                fixExtension(root, f)
+
+                continue
 
             try:
                 y, m, d = getDateFromFile(root, f)
@@ -146,4 +157,3 @@ if __name__ == "__main__":
     mkdir(dupes)
     walk()
     # testGetDateFromString()
-
