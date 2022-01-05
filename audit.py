@@ -13,9 +13,10 @@ log.init("gt-cleanup.log")
 # Change accordingly: (TODO: command-line arguments...)
 safe = True
 
-src = r"D:\Takeout\Google Photos"
-dst = r"D:\Takeout\Sorted"
-dupes = r"D:\Takeout\Dupes"
+src = r"D:\takeout_2021"
+# src = root+ r"\Google Photos"
+dst = src + r".Sorted"
+dupes = src + r".Dupes"
 
 
 def rm(filename):
@@ -94,10 +95,12 @@ def fixExtension(root, f):
 
 
 def walk():
-    for root, _, files in os.walk(src):
+    for root, dirs, files in os.walk(src):
         log.info(f"In {root}")
         for f in files:
-            if f.endswith(".json"):
+            if f.endswith(".json") or f.endswith(
+                ".MP"
+            ):  # We don't need the Json metadata, and MP files are those gimmicky short videos taken with a photo.
                 log.info(f"removing {f}")
                 rm(os.path.join(root, f))
                 continue
