@@ -8,7 +8,13 @@ Files are structured as follows
 
 After that, you can process the files further, looking for duplicates with your library, etc.
 
+# unzipping the files
 
+e.g.
+
+```Powershell
+Get-ChildItem .\Downloads\ -Filter *.zip | Expand-Archive -DestinationPath D:\takeout_2022\ -Force 
+```
 
 # Random notes
 

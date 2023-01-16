@@ -13,7 +13,7 @@ log.init("gt-cleanup.log")
 # Change accordingly: (TODO: command-line arguments...)
 safe = True
 
-src = r"D:\takeout_2021"
+src = r"D:\takeout_2022"
 # src = root+ r"\Google Photos"
 dst = src + r".Sorted"
 dupes = src + r".Dupes"
