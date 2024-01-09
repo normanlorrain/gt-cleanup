@@ -13,7 +13,7 @@ log.init("gt-cleanup.log")
 # Change accordingly: (TODO: command-line arguments...)
 safe = True
 
-src = r"D:\takeout_2022"
+src = r"D:\takeout 2023"
 # src = root+ r"\Google Photos"
 dst = src + r".Sorted"
 dupes = src + r".Dupes"
@@ -67,9 +67,7 @@ def getDatefromExif(f):
 
 
 def getDateFromString(s):
-    regex = re.compile(
-        r".*\D(2007|2008|2009|2010|2011|2012|2013|2014|2015|2016|2017|2018|2019|2020|2021)[^0-9]?(\d\d)[^0-9]?(\d\d)"
-    )
+    regex = re.compile(r"PXL_(\d\d\d\d)(\d\d)(\d\d)_\d*")
     result = regex.match(s)
     if result:
         return result.group(1), result.group(2), result.group(3)
